@@ -40,25 +40,6 @@ def cost(theta_p, state_p_init, time, data, k):
 
     return cost
 
-# def numerical_gradient(cost_function, theta_p, *args, epsilon=1e-5):
-#     """
-#     Compute numerical gradient of the cost function w.r.t. theta_p
-#     """
-#     grad = np.zeros_like(theta_p)
-#     for i in range(len(theta_p)):
-#         theta_p_plus = theta_p.copy()
-#         theta_p_minus = theta_p.copy()
-        
-#         theta_p_plus[i] += epsilon
-#         theta_p_minus[i] -= epsilon
-        
-#         cost_plus = cost_function(theta_p_plus, *args)
-#         cost_minus = cost_function(theta_p_minus, *args)
-        
-#         grad[i] = (cost_plus - cost_minus) / (2 * epsilon)
-    
-#     return grad
-
 # Iterate over each time step to optimize the trajectory
 for k in range(len(time) - predictionhorizon):
     # Initialize predicted state for each step
@@ -69,7 +50,7 @@ for k in range(len(time) - predictionhorizon):
     bounds = [(-np.pi, np.pi)] * (predictionhorizon - 1)  # Bound theta_p to reasonable values for angles
     
     result = minimize(cost, theta_p, args=(state_p_init, time, data, k), method='Nelder-Mead', 
-                  options={'disp': True})
+                  options={'disp': False})
 
     # Check if the optimization was successful
     if result.success:
@@ -77,12 +58,6 @@ for k in range(len(time) - predictionhorizon):
     else:
         print(f"Optimization failed at step {k}: {result.message}")
     
-    # Debugging: print optimized theta_p and cost at each step
-    #print(f"Step {k}, Optimized theta_p: {theta_p}, Cost: {result.fun}")
-    
-    # Compute and print numerical gradient for debugging
-    #grad = numerical_gradient(cost, theta_p, state_p_init, time, data, k)
-    #print(f"Step {k}, Gradient: {grad}")
     
     # Update the traversed path using the first action (theta_p[0])
     deltat = time[k + 1] - time[k]
